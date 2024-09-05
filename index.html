@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de Seguimiento para Pacientes Trasplantados de Corazón</title>
+    <title>Dashboard para Seguimiento de Pacientes Trasplantados de Corazón</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,305 +12,257 @@
             padding: 20px;
             background-color: #f4f4f4;
         }
-        .container {
+        .dashboard {
             max-width: 800px;
-            margin: auto;
-            background: white;
+            margin: 0 auto;
+            background-color: #fff;
             padding: 20px;
+            border-radius: 8px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-        h1, h2 {
-            color: #333;
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
         }
         .tab-button {
-            background-color: #f1f1f1;
-            border: none;
-            outline: none;
-            cursor: pointer;
             padding: 10px 20px;
-            transition: 0.3s;
-            font-size: 17px;
-        }
-        .tab-button:hover {
-            background-color: #ddd;
+            border: none;
+            background-color: #f0f0f0;
+            cursor: pointer;
+            transition: background-color 0.3s;
         }
         .tab-button.active {
-            background-color: #ccc;
+            background-color: #007bff;
+            color: #fff;
         }
         .tab-content {
             display: none;
-            padding: 20px 0;
-            border-top: none;
         }
-        input, textarea {
+        .tab-content.active {
+            display: block;
+        }
+        form {
+            display: grid;
+            gap: 10px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="number"] {
             width: 100%;
             padding: 8px;
-            margin: 8px 0;
-            display: inline-block;
-            border: 1px solid #ccc;
-            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .medicacion {
+            display: grid;
+            gap: 5px;
         }
         button {
-            background-color: #4CAF50;
-            color: white;
             padding: 10px 20px;
-            margin: 8px 0;
+            background-color: #28a745;
+            color: #fff;
             border: none;
+            border-radius: 4px;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
         button:hover {
-            opacity: 0.8;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
+            background-color: #218838;
         }
         ul {
-            list-style-type: disc;
             padding-left: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Dashboard de Seguimiento para Pacientes Trasplantados de Corazón</h1>
-        
-        <div class="tab">
-            <button class="tab-button active" onclick="openTab(event, 'datos')">Datos Personales</button>
-            <button class="tab-button" onclick="openTab(event, 'consejos')">Consejos Medicamentos</button>
-            <button class="tab-button" onclick="openTab(event, 'planning')">Planning Diario</button>
-            <button class="tab-button" onclick="openTab(event, 'generales')">Consejos Generales</button>
-            <button class="tab-button" onclick="openTab(event, 'quiz')">Quiz</button>
+    <div class="dashboard">
+        <div class="tabs">
+            <button class="tab-button active" data-tab="datos-paciente">Datos del Paciente</button>
+            <button class="tab-button" data-tab="consejos-medicacion">Consejos de Medicación</button>
+            <button class="tab-button" data-tab="consejos-generales">Consejos Generales</button>
         </div>
 
-        <div id="datos" class="tab-content" style="display:block;">
-            <h2>Datos Personales</h2>
-            <form id="datosForm">
-                <input type="text" id="nombre" placeholder="Nombre" required>
-                <input type="number" id="edad" placeholder="Edad" required>
-                <input type="text" id="sexo" placeholder="Sexo" required>
-                <input type="number" id="peso" placeholder="Peso (kg)" required>
-                <input type="number" id="altura" placeholder="Altura (cm)" required>
-                <textarea id="medicamentos" placeholder="Lista de medicamentos (uno por línea)" rows="5" required></textarea>
-                <button type="submit">Guardar Datos</button>
+        <div id="datos-paciente" class="tab-content active">
+            <h2>Datos del Paciente</h2>
+            <form id="paciente-form">
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" name="nombre">
+
+                <label for="edad">Edad:</label>
+                <input type="number" id="edad" name="edad">
+
+                <label for="sexo">Sexo:</label>
+                <input type="text" id="sexo" name="sexo">
+
+                <label for="peso">Peso (kg):</label>
+                <input type="number" id="peso" name="peso">
+
+                <h3>Medicación Inmunosupresora</h3>
+                <div class="medicacion" id="inmunosupresores">
+                    <!-- Los checkboxes se añadirán dinámicamente con JavaScript -->
+                </div>
+
+                <h3>Antiinfecciosos</h3>
+                <div class="medicacion" id="antiinfecciosos">
+                    <!-- Los checkboxes se añadirán dinámicamente con JavaScript -->
+                </div>
+
+                <button type="button" id="nuevo-paciente">Nuevo Paciente</button>
             </form>
         </div>
 
-        <div id="consejos" class="tab-content">
-            <h2>Consejos sobre Medicamentos</h2>
-            <div id="consejosMedicamentos"></div>
-        </div>
-
-        <div id="planning" class="tab-content">
-            <h2>Planning Diario de Medicamentos</h2>
-            <table id="planningTable">
-                <tr>
-                    <th>Hora</th>
-                    <th>Medicamento</th>
-                </tr>
-            </table>
-        </div>
-
-        <div id="generales" class="tab-content">
-            <h2>Consejos Generales y Precauciones</h2>
-            <ul>
-                <li>Mantenga una buena higiene personal y bucal.</li>
-                <li>Evite el contacto con personas que tengan infecciones.</li>
-                <li>Use mascarilla en lugares concurridos durante los primeros meses.</li>
-                <li>Evite la exposición directa al sol y use protección solar.</li>
-                <li>Siga una dieta equilibrada y baja en sal.</li>
-                <li>Realice ejercicio físico moderado regularmente.</li>
-                <li>Acuda a todas las revisiones programadas.</li>
-                <li>Tome la medicación exactamente como se le ha prescrito.</li>
-                <li>Informe a su médico de cualquier síntoma inusual o efecto secundario.</li>
+        <div id="consejos-medicacion" class="tab-content">
+            <h2>Consejos de Medicación</h2>
+            <ul id="lista-consejos-medicacion">
+                <!-- Los consejos se añadirán dinámicamente con JavaScript -->
             </ul>
         </div>
 
-        <div id="quiz" class="tab-content">
-            <h2>Quiz</h2>
-            <div id="quizContainer">
-                <div id="question"></div>
-                <div id="answers"></div>
-                <div id="explanation" style="display: none;"></div>
-                <button id="nextButton" style="display: none;">Siguiente Pregunta</button>
-                <div id="score" style="display: none;"></div>
-            </div>
+        <div id="consejos-generales" class="tab-content">
+            <h2>Consejos Generales y Precauciones</h2>
+            <ul id="lista-consejos-generales">
+                <!-- Los consejos se añadirán dinámicamente con JavaScript -->
+            </ul>
         </div>
     </div>
 
     <script>
-        function openTab(evt, tabName) {
-            var i, tabContent, tabButtons;
-            tabContent = document.getElementsByClassName("tab-content");
-            for (i = 0; i < tabContent.length; i++) {
-                tabContent[i].style.display = "none";
-            }
-            tabButtons = document.getElementsByClassName("tab-button");
-            for (i = 0; i < tabButtons.length; i++) {
-                tabButtons[i].className = tabButtons[i].className.replace(" active", "");
-            }
-            document.getElementById(tabName).style.display = "block";
-            evt.currentTarget.className += " active";
-        }
-
-        const consejosMedicamentos = {
-            'DEFLAZACORT': 'Tomar después del desayuno.',
-            'CELL-CEPT': 'Tomar por la mañana y por la noche, respetando el horario.',
-            'MYFORTIC': 'Tomar por la mañana y por la noche, respetando el horario.',
-            'PROGRAF': 'Tomar con el estómago vacío (1 hora antes o 2 después de las comidas).',
-            'ADVAGRAF': 'Tomar una vez al día con el estómago vacío (1 hora antes o 2 después del desayuno).',
-            'CERTICAN': 'Tomar por la mañana y por la noche, respetando el horario.',
-            'SANDIMMUN': 'Tomar según las indicaciones del médico.',
-            'VALCYTE': 'Tomar con el desayuno.',
-            'SEPTRIN FORTE': 'Tomar con un vaso de agua tras cenar.',
-            'OMEPRAZOL': 'Tomar un comprimido por la mañana.',
-            'PANTOPRAZOL': 'Tomar un comprimido por la mañana.',
-        };
-
-        document.getElementById('datosForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const medicamentos = document.getElementById('medicamentos').value.split('\n');
-            
-            // Actualizar consejos de medicamentos
-            const consejosDiv = document.getElementById('consejosMedicamentos');
-            consejosDiv.innerHTML = '';
-            medicamentos.forEach(med => {
-                const consejo = consejosMedicamentos[med.toUpperCase()] || 'Consulte con su médico para instrucciones específicas.';
-                consejosDiv.innerHTML += `<p><strong>${med}:</strong> ${consejo}</p>`;
-            });
-
-            // Actualizar planning diario
-            const planningTable = document.getElementById('planningTable');
-            planningTable.innerHTML = '<tr><th>Hora</th><th>Medicamento</th></tr>';
-            medicamentos.forEach(med => {
-                const row = planningTable.insertRow(-1);
-                const cell1 = row.insertCell(0);
-                const cell2 = row.insertCell(1);
-                cell1.textContent = 'Según prescripción médica';
-                cell2.textContent = med;
-            });
-
-            alert('Datos guardados correctamente');
-        });
-
-        // Quiz
-        const questions = [
-            {
-                question: '¿Cuándo debe tomarse el Advagraf?',
-                answers: [
-                    { text: 'Por la mañana y por la noche', correct: false },
-                    { text: 'Una vez al día con el estómago vacío', correct: true },
-                    { text: 'Con las comidas', correct: false },
-                    { text: 'Antes de dormir', correct: false }
-                ],
-                explanation: 'El Advagraf debe tomarse una vez al día con el estómago vacío, preferiblemente por la mañana.'
-            },
-            {
-                question: '¿Qué precaución debe tomar un paciente trasplantado con respecto al sol?',
-                answers: [
-                    { text: 'No es necesario tomar precauciones', correct: false },
-                    { text: 'Usar protección solar de factor bajo', correct: false },
-                    { text: 'Evitar la exposición directa y usar protección solar de alto factor', correct: true },
-                    { text: 'Exponerse al sol para mejorar la absorción de vitamina D', correct: false }
-                ],
-                explanation: 'Los pacientes trasplantados deben evitar la exposición directa al sol y usar protección solar de alto factor para prevenir daños en la piel.'
-            },
-            {
-                question: '¿Con qué frecuencia debe un paciente trasplantado lavarse las manos?',
-                answers: [
-                    { text: 'Una vez al día', correct: false },
-                    { text: 'Solo antes de las comidas', correct: false },
-                    { text: 'Frecuentemente, especialmente antes y después de ciertas actividades', correct: true },
-                    { text: 'No es necesario lavarse las manos con frecuencia', correct: false }
-                ],
-                explanation: 'Se aconseja el lavado frecuente de manos, especialmente antes y después de actividades como comer, defecar, orinar, etc., para prevenir infecciones.'
-            },
-            {
-                question: '¿Qué debe hacer un paciente si olvida tomar una dosis de su medicación inmunosupresora?',
-                answers: [
-                    { text: 'Tomar doble dosis en la siguiente toma', correct: false },
-                    { text: 'Saltarse esa dosis y continuar con la siguiente', correct: false },
-                    { text: 'Tomarla lo antes posible, a menos que esté cerca de la siguiente dosis', correct: true },
-                    { text: 'Dejar de tomar la medicación por completo', correct: false }
-                ],
-                explanation: 'Si se olvida una dosis, debe tomarla lo antes posible. Sin embargo, si está próximo a la nueva dosis, NO se debe tomar doble medicación.'
-            },
-            {
-                question: '¿Qué tipo de ejercicio se recomienda para los pacientes trasplantados de corazón?',
-                answers: [
-                    { text: 'Deportes de contacto intenso', correct: false },
-                    { text: 'Ningún tipo de ejercicio', correct: false },
-                    { text: 'Ejercicio físico moderado como paseos o bicicleta', correct: true },
-                    { text: 'Levantamiento de pesas pesadas', correct: false }
-                ],
-                explanation: 'Se aconseja ejercicio físico moderado como paseos, bicicleta o gimnasia suave, aumentando progresivamente la intensidad. Se deben evitar deportes de contacto o de mucha intensidad.'
-            }
+        // Datos de medicamentos
+        const medicacionInmunosupresora = [
+            "Tacrolimus (Prograf)",
+            "Tacrolimus (Advagraf)",
+            "Ciclosporina (Sandimmun Neoral)",
+            "Micofenolato mofetilo (CellCept)",
+            "Micofenolato sódico (Myfortic)",
+            "Deflazacort (Deflazacort)",
+            "Everolimus (Certican)"
         ];
 
-        let currentQuestion = 0;
-        let score = 0;
+        const antiinfecciosos = [
+            "Trimetoprim/Sulfametoxazol (Septrin Forte)",
+            "Valganciclovir (Valcyte)",
+            "Nistatina (Mycostatin susp)",
+            "Clorhexidina enjuagues (Cariax)",
+            "Pirimetamina (Daraprim)",
+            "Isoniacida/Piridoxina (Cemidon B6)"
+        ];
 
-        function loadQuestion() {
-            const questionElement = document.getElementById('question');
-            const answersElement = document.getElementById('answers');
-            const currentQ = questions[currentQuestion];
+        const consejosGenerales = [
+            "Mantenga una dieta equilibrada y baja en sal. Consulte con su nutricionista para un plan personalizado.",
+            "Realice ejercicio moderado regularmente, según las recomendaciones de su médico.",
+            "Evite el contacto con personas enfermas y mantenga una buena higiene personal.",
+            "No fume y evite el consumo de alcohol.",
+            "Use protección solar y evite la exposición prolongada al sol.",
+            "Mantenga un registro de su peso, presión arterial y temperatura diariamente.",
+            "Acuda a todas sus citas médicas y de seguimiento programadas.",
+            "Informe inmediatamente a su médico si experimenta fiebre, dolor en el pecho, dificultad para respirar o cualquier otro síntoma inusual.",
+            "No tome ningún medicamento nuevo, incluidos los de venta libre, sin consultar primero con su equipo de trasplante.",
+            "Mantenga una buena salud dental y consulte a su dentista regularmente, informándole de su condición de trasplantado.",
+        ];
 
-            questionElement.innerHTML = currentQ.question;
-            answersElement.innerHTML = '';
-
-            currentQ.answers.forEach((answer, index) => {
-                const button = document.createElement('button');
-                button.innerHTML = answer.text;
-                button.onclick = () => selectAnswer(index);
-                answersElement.appendChild(button);
-            });
-
-            document.getElementById('explanation').style.display = 'none';
-            document.getElementById('nextButton').style.display = 'none';
-        }
-
-        function selectAnswer(index) {
-            const currentQ = questions[currentQuestion];
-            const explanation = document.getElementById('explanation');
-            const nextButton = document.getElementById('nextButton');
-
-            if (currentQ.answers[index].correct) {
-                score++;
-            }
-
-            explanation.innerHTML = `<p><strong>${currentQ.answers[index].correct ? 'Correcto' : 'Incorrecto'}:</strong> ${currentQ.explanation}</p>`;
-            explanation.style.display = 'block';
-            nextButton.style.display = 'block';
-
-            document.getElementById('answers').querySelectorAll('button').forEach(button => {
-                button.disabled = true;
+        // Función para crear checkboxes
+        function crearCheckboxes(contenedor, medicamentos) {
+            medicamentos.forEach(med => {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <input type="checkbox" id="${med}" name="medicacion">
+                    <label for="${med}">${med}</label>
+                `;
+                contenedor.appendChild(div);
             });
         }
 
-        document.getElementById('nextButton').onclick = () => {
-            currentQuestion++;
-            if (currentQuestion < questions.length) {
-                loadQuestion();
-            } else {
-                showFinalScore();
-            }
-        };
+        // Crear checkboxes para medicamentos
+        crearCheckboxes(document.getElementById('inmunosupresores'), medicacionInmunosupresora);
+        crearCheckboxes(document.getElementById('antiinfecciosos'), antiinfecciosos);
 
-        function showFinalScore() {
-            const quizContainer = document.getElementById('quizContainer');
-            quizContainer.innerHTML = `<h2>Quiz Completado</h2><p>Tu puntuación: ${score} de ${questions.length}</p>`;
+        // Añadir consejos generales
+        const listaConsejosGenerales = document.getElementById('lista-consejos-generales');
+        consejosGenerales.forEach(consejo => {
+            const li = document.createElement('li');
+            li.textContent = consejo;
+            listaConsejosGenerales.appendChild(li);
+        });
+
+        // Manejar cambios de pestaña
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                button.classList.add('active');
+                document.getElementById(button.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Función para generar consejos de medicación
+        function generarConsejosMedicacion() {
+            const consejos = [];
+            document.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
+                switch(checkbox.id) {
+                    case "Tacrolimus (Prograf)":
+                        consejos.push("Tome Prograf dos veces al día, con el estómago vacío, a la misma hora todos los días.");
+                        break;
+                    case "Tacrolimus (Advagraf)":
+                        consejos.push("Tome Advagraf una vez al día por la mañana, con el estómago vacío.");
+                        break;
+                    case "Ciclosporina (Sandimmun Neoral)":
+                        consejos.push("Tome Sandimmun Neoral dos veces al día, a intervalos regulares. Evite el pomelo y su zumo.");
+                        break;
+                    case "Micofenolato mofetilo (CellCept)":
+                        consejos.push("Tome CellCept dos veces al día, con el estómago vacío. No abra ni triture las cápsulas.");
+                        break;
+                    case "Micofenolato sódico (Myfortic)":
+                        consejos.push("Tome Myfortic dos veces al día. Puede tomarlo con o sin alimentos.");
+                        break;
+                    case "Deflazacort (Deflazacort)":
+                        consejos.push("Tome Deflazacort una vez al día por la mañana, preferiblemente con alimentos.");
+                        break;
+                    case "Everolimus (Certican)":
+                        consejos.push("Tome Certican dos veces al día, a la misma hora, con o sin alimentos. No triture los comprimidos.");
+                        break;
+                    case "Trimetoprim/Sulfametoxazol (Septrin Forte)":
+                        consejos.push("Tome Septrin Forte según la pauta prescrita, generalmente tres veces por semana. Beba abundante agua.");
+                        break;
+                    case "Valganciclovir (Valcyte)":
+                        consejos.push("Tome Valcyte una vez al día con alimentos. No rompa ni triture los comprimidos.");
+                        break;
+                    case "Nistatina (Mycostatin susp)":
+                        consejos.push("Enjuáguese con Mycostatin suspensión y manténgala en la boca el mayor tiempo posible antes de tragar.");
+                        break;
+                    case "Clorhexidina enjuagues (Cariax)":
+                        consejos.push("Realice enjuagues con Cariax durante 30 segundos, dos veces al día. No lo trague.");
+                        break;
+                    case "Pirimetamina (Daraprim)":
+                        consejos.push("Tome Daraprim una vez a la semana, con alimentos para reducir las molestias estomacales.");
+                        break;
+                    case "Isoniacida/Piridoxina (Cemidon B6)":
+                        consejos.push("Tome Cemidon B6 una vez al día, con el estómago vacío. Evite el alcohol durante el tratamiento.");
+                        break;
+                }
+            });
+            return consejos;
         }
 
-        // Iniciar el quiz cuando se abre la pestaña
-        document.querySelector('button[onclick="openTab(event, \'quiz\')"]').addEventListener('click', () => {
-            currentQuestion = 0;
-            score = 0;
-            loadQuestion();
+        // Actualizar consejos de medicación cuando se cambia la selección
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const listaConsejosMedicacion = document.getElementById('lista-consejos-medicacion');
+                listaConsejosMedicacion.innerHTML = '';
+                const consejos = generarConsejosMedicacion();
+                consejos.forEach(consejo => {
+                    const li = document.createElement('li');
+                    li.textContent = consejo;
+                    listaConsejosMedicacion.appendChild(li);
+                });
+            });
+        });
+
+        // Función para resetear el formulario
+        document.getElementById('nuevo-paciente').addEventListener('click', () => {
+            document.getElementById('paciente-form').reset();
+            document.getElementById('lista-consejos-medicacion').innerHTML = '';
         });
     </script>
 </body>
