@@ -1,0 +1,1841 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test de Conocimientos sobre Trasplante Cardíaco</title>
+<!-- Chart.js para los gráficos -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+<!-- html2canvas y jsPDF para generar PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+/* Estilos generales */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+}
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+h1 {
+    margin-top: 0;
+    text-align: center;
+    font-size: 30px;
+    font-weight: normal;
+    color: #blue;
+}
+h2 {
+    margin-top: 0;
+    text-align: center;
+    font-size: 20px;
+    font-weight: lighter;
+    color: #0056b3;
+}
+h3 {
+    margin-top: 0;
+    text-align: center;
+    font-size: 12px;
+    font-weight: lighter;
+    color: #0056b3;
+}
+h4 {
+    margin-top: 0;
+    text-align: left;
+    font-size: 20px;
+    font-weight: normal;
+    color: #333;
+}
+button {
+    cursor: pointer;
+}
+/* Estilos del dashboard */
+.dashboard-title {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+}
+.tabs {
+    display: flex;
+    margin-bottom: 20px;
+}
+.tab-btn {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+    color: #333;
+    font-weight: bold;
+}
+.tab-btn:not(:last-child) {
+    margin-right: 5px;
+}
+.tab-btn.active {
+    background-color: #007BFF;
+    color: white;
+    border-radius: 4px;
+}
+.tab-content {
+    display: none;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.tab-content.active {
+    display: block;
+}
+/* Estilos de los formularios */
+.form-group {
+    margin-bottom: 15px;
+}
+.form-label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: normal;
+}
+.form-control {
+    width: 50%;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+/* Estilos de los botones */
+.btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+}
+.btn-primary {
+    background-color: #007BFF;
+    color: white;
+}
+.btn-success {
+    background-color: #4CAF50;
+    color: white;
+}
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+.btn-danger {
+    background-color: #f44336;
+    color: white;
+}
+/* Estilos del test */
+.question-header {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+.question-text {
+    font-weight: bold;
+    color: #0056b3
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+.option-btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    text-align: left;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+/* Estilos de los resultados */
+.score-container {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+.score-text {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
+}
+.charts-container {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+.chart-container {
+    width: 48%;
+    margin-bottom: 20px;
+}
+.answer-card {
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    border: 1px solid;
+}
+.answer-card.correct {
+    background-color: #e8f5e9;
+    border-color: #c8e6c9;
+}
+.answer-card.incorrect {
+    background-color: #ffebee;
+    border-color: #ffcdd2;
+}
+.button-container {
+    display: flex;
+    justify-content: space-between;
+}
+/* Estilos para la ventana modal del informe */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    z-index: 1000;
+    display: none;
+}
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    background-color: white;
+    border-radius: 8px;
+    overflow: auto;
+    z-index: 1001;
+    padding: 20px;
+}
+/* Estilos específicos para el informe */
+#full-report {
+    background-color: white;
+    padding: 30px;
+    max-width: 800px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+}
+.report-title {
+    text-align: center;
+    border-bottom: 2px solid #333;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+.patient-info {
+    margin-bottom: 20px;
+}
+.patient-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+.patient-table th, .patient-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+.patient-table th {
+    background-color: #f0f0f0;
+    width: 30%;
+}
+.results-summary {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+.report-answers {
+    margin-top: 20px;
+}
+.report-answer {
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.report-answer.correct {
+    background-color: #f0f7f0;
+}
+.report-answer.incorrect {
+    background-color: #fff0f0;
+}
+.report-footer {
+    margin-top: 30px;
+    padding-top: 10px;
+    border-top: 1px solid #ddd;
+    text-align: center;
+    color: #777;
+    font-size: 14px;
+}
+/* Estilo para el spinner de carga */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(0,0,0,0.2);
+    border-radius: 50%;
+    border-top-color: #007BFF;
+    animation: spin 1s ease-in-out infinite;
+    margin-left: 10px;
+}
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Estilos adicionales para el temporizador */
+#timer-container {
+    background-color: #f8f9fa;
+    padding: 8px 15px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    border: 1px solid #dee2e6;
+}
+
+#timer-display {
+    font-size: 20px;
+    font-weight: bold;
+    color: #28a745;
+}
+
+.timer-warning {
+    color: #ffc107;
+}
+
+.timer-danger {
+    color: #dc3545;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>Test de conocimientos sobre trasplante cardíaco</h1>
+    <h2>Servicio de Farmacia. Hospital U.P. La Fe</h2>
+    <h3>EMB (2025)</h3>
+    <!-- Navegación por pestañas -->
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="info">Información del paciente</button>
+        <button class="tab-btn" data-tab="test">Test</button>
+        <button class="tab-btn" data-tab="results">Resultados</button>
+    </div>
+
+    <!-- Pestaña de información del paciente -->
+    <div id="info-tab" class="tab-content active">
+        <h4>Información del paciente</h4>
+        <div class="form-group">
+            <label class="form-label">Nombre:</label>
+            <input type="text" id="patient-name" class="form-control">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Edad:</label>
+            <input type="number" id="patient-age" class="form-control">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Sexo:</label>
+            <select id="patient-sex" class="form-control">
+                <option value="">Seleccione</option>
+                <option value="M">Masculino</option>
+                <option value="F">Femenino</option>
+                <option value="O">Otro</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Fecha:</label>
+            <input type="date" id="patient-date" class="form-control">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Duración del test:</label>
+            <p>dispone de <strong>60 segundos</strong> para completar 5 preguntas</p>
+        </div>
+        <button id="start-test-btn" class="btn btn-success">Comenzar Test</button>
+    </div>
+
+    <!-- Pestaña del test -->
+    <div id="test-tab" class="tab-content">
+        <h4>Test de Conocimientos</h4>
+        <!-- El temporizador se insertará aquí mediante JavaScript -->
+        <div class="question-header">
+            <p id="question-progress">Pregunta 1 de 5</p>
+        </div>
+        <div class="question-text" id="question-text"></div>
+        <div id="options-container"></div>
+    </div>
+
+    <!-- Pestaña de resultados -->
+    <div id="results-tab" class="tab-content">
+        <h4>Resultados del Test</h4>
+        <div id="results-content">
+            <p>Complete el test para ver los resultados.</p>
+            <button id="go-to-test-btn" class="btn btn-primary">Ir al Test</button>
+        </div>
+    </div>
+</div>
+
+<!-- Ventana modal para el informe -->
+<div id="report-modal" class="modal-overlay">
+    <div class="modal">
+        <div class="no-print" style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+            <h2>Informe de Resultados</h2>
+            <div>
+                <button id="download-report-btn" class="btn btn-primary">Descargar PDF <span id="download-spinner" style="display:none;" class="loading-spinner"></span></button>
+                <button id="close-report-btn" class="btn btn-danger">Cerrar</button>
+            </div>
+        </div>
+        <div id="full-report">
+            <!-- El contenido del informe se generará dinámicamente -->
+        </div>
+        <div id="original-report-backup" style="display: none;">
+            <!-- Respaldo del informe original -->
+        </div>
+    </div>
+</div>
+
+<script>
+// Cargar dependencias jsPDF
+window.jsPDF = window.jspdf.jsPDF;
+
+// Variables para el temporizador
+let timerDuration = 60; // Duración del temporizador en segundos
+let timerInterval = null;
+let remainingTime = 0;
+let timerDisplay;
+
+// Esperar a que Chart.js se cargue completamente
+window.onload = function() {
+    // Banco de preguntas completo
+    const allQuestions = [
+        {
+	question: "¿Cuál es una de las reglas básicas que debe cumplir un paciente trasplantado de corazón?",
+	options: [
+	"Tomar el tratamiento solo cuando se sienta mal",
+	"Llevar una vida sedentaria",
+	"Tomar correctamente el tratamiento",
+	"Consumir alimentos ricos en colesterol"
+	],
+	correctAnswer: 3,
+        explanation: ""
+	},
+	{
+	question: "¿Qué se recomienda para la higiene bucal después del trasplante?",
+	options: [
+	"Cepillarse una vez al día",
+	"No usar hilo dental",
+	"Usar un cepillo duro",
+	"Cepillarse con un cepillo suave después de cada comida"
+	],
+	correctAnswer: 4,
+        explanation: ""
+	},
+	{
+	question: "¿Cuándo se recomienda el uso de mascarillas para el paciente trasplantado?",
+	options: [
+	"Nunca",
+	"Solo en el hospital",
+	"Durante los primeros meses en lugares concurridos, hospitales y centros de salud",
+	"Solo en casa"
+	],
+	correctAnswer: 3,
+        explanation: ""
+	},
+	{
+	question: "¿Qué grupo de medicamentos se utilizan para prevenir el rechazo del órgano trasplantado?",
+	options: [
+	"Antibióticos",
+	"Analgésicos",
+	"Inmunosupresores",
+	"Antiinflamatorios"
+	],
+	correctAnswer: 3,
+        explanation: ""
+	},
+	{
+	question: "¿Cuál de los siguientes NO es un inmunosupresor?",
+	options: [
+	"Tacrolimus",
+	"Micofenolato",
+	"Deflazacort",
+	"Ibuprofeno"
+	],
+	correctAnswer: 4,
+        explanation: ""
+	},
+	{
+	question: "¿Cómo debe tomarse el tacrolimus (Prograf)?",
+	options: [
+	"Con las comidas",
+	"Con el estómago lleno",
+	"Con el estómago vacío, 1 hora antes o 2 después del desayuno y de la cena",
+	"No importa cuándo se tome"
+	],
+	correctAnswer: 3,
+        explanation: ""
+	},
+	{
+	question: "¿Qué bebida está contraindicada con el tratamiento inmunosupresor?",
+	options: [
+	"Zumo de naranja",
+	"Zumo de pomelo",
+	"Agua mineral",
+	"Leche desnatada"
+	],
+	correctAnswer: 2,
+        explanation: ""
+	},
+	{
+	question: "¿Cuál es la función principal del valganciclovir (Valcyte)?",
+	options: [
+	"Antivírico",
+	"Antibacteriano",
+	"Antifúngico",
+	"Antiparasitario"
+	],
+	correctAnswer: 1,
+        explanation: ""
+	},
+	{
+	question: "¿Dónde debe recogerse el valganciclovir (Valcyte)?",
+	options: [
+	"En cualquier farmacia",
+	"En la farmacia del hospital (Farmacia de Pacientes Externos)",
+	"En el centro de salud",
+	"Se entrega a domicilio"
+	],
+	correctAnswer: 2,
+        explanation: ""
+	},
+	{
+	question: "¿Qué se recomienda hacer si el paciente olvida tomar una dosis de medicación?",
+	options: [
+	"Tomar doble dosis en la siguiente toma",
+	"Saltarse la siguiente dosis",
+	"Tomarla lo antes posible y la siguiente a su horario habitual",
+	"Esperar al día siguiente para reanudar el tratamiento"
+	],
+	correctAnswer: 3,
+    explanation: ""
+	},
+	{
+	question: "¿Qué debe hacer el paciente si vomita después de tomar la medicación y ve las pastillas?",
+	options: [
+	"No hacer nada",
+	"Tomar otra dosis inmediatamente",
+	"Esperar a la siguiente toma programada",
+	"Volver a tomarlas 1/2 hora después"
+	],
+	correctAnswer: 4,
+    explanation: ""
+	},
+	{
+	question: "¿Cuál es el rango de tensión arterial considerado ideal para un paciente trasplantado?",
+	options: [
+	"Por debajo de 120/80",
+	"Por debajo de 130/80",
+	"Por debajo de 140/90",
+	"Por debajo de 150/100"
+	],
+	correctAnswer: 2,
+    explanation: ""
+	},
+	{
+	question: "¿Con qué frecuencia debe tomarse la temperatura durante el primer mes post-trasplante?",
+	options: [
+	"Una vez al día",
+	"Dos veces al día",
+	"Tres veces al día",
+	"Solo si se siente fiebre"
+	],
+	correctAnswer: 2,
+    explanation: ""
+	},
+	{
+	question: "¿Qué incremento rápido de peso se considera un signo de alerta?",
+	options: [
+	"1 kg en una semana",
+	"2 o más kg en menos de 3 días",
+	"4 kg en un mes",
+	"Cualquier aumento de peso"
+	],
+	correctAnswer: 2,
+    explanation: ""
+	},
+	{
+	question: "¿Qué alimento se recomienda consumir para prevenir la osteoporosis?",
+	options: [
+	"Carne roja",
+	"Pan blanco",
+	"Leche y derivados",
+	"Frutas cítricas"
+	],
+	correctAnswer: 3,
+    explanation: ""
+	},
+	{
+	question: "¿Qué tipo de grasas se recomienda consumir en la dieta post-trasplante?",
+	options: [
+	"Grasas saturadas",
+	"Grasas trans",
+	"Grasas insaturadas",
+	"No se recomienda consumir ningún tipo de grasa"
+	],
+	correctAnswer: 3,
+    explanation: ""
+	},
+	{
+	question: "¿Qué se recomienda beber durante las comidas?",
+	options: [
+	"Refrescos azucarados",
+	"Bebidas alcohólicas",
+	"Agua embotellada o potable",
+	"Zumos naturales con azúcar añadido"
+	],
+	correctAnswer: 3,
+    explanation: ""
+	},
+	{
+	question: "¿Qué tipo de cocción se recomienda para los alimentos?",
+	options: [
+	"Fritos",
+	"Cocidos, asados, a la plancha o al vapor",
+	"Crudos",
+	"Ahumados"
+	],
+	correctAnswer: 2,
+    explanation: ""
+	},
+	{
+	question: "¿Qué se recomienda hacer en los dos primeros días de diarrea?",
+	options: [
+	"Comer normalmente",
+	"Seguir una dieta sólida",
+	"Seguir una dieta líquida",
+	"Ayunar completamente"
+	],
+	correctAnswer: 3,
+    explanation: ""
+	},
+	{
+	question: "¿Qué alimento se recomienda para prevenir el estreñimiento?",
+	options: [
+	"Arroz blanco",
+	"Carne roja",
+	"Verduras",
+	"Pan blanco"
+	],
+	correctAnswer: 3,
+    explanation: ""
+	},
+	{
+	question: "¿Cuándo se recomienda solicitar la vacuna antigripal?",
+	options: [
+	"En cualquier momento del año",
+	"A partir del mes de septiembre y siempre que hayan pasado más de 3 meses del trasplante",
+	"Solo en invierno",
+	"Inmediatamente después del trasplante"
+	],
+	correctAnswer: 2,
+    explanation: ""
+	},
+	{
+	question: "¿Qué factor de protección solar se recomienda usar?",
+	options: [
+	"Factor 10-15",
+	"Factor 20-25",
+	"Factor 30-50",
+	"No es necesario usar protección solar"
+	],
+	correctAnswer: 3,
+    explanation: ""
+	},
+	{
+	question: "¿Con qué frecuencia se recomienda ducharse después de quitar los puntos de la herida?",
+	options: [
+	"Una vez a la semana",
+	"Dos veces a la semana",
+	"Cada dos días",
+	"Todos los días"
+	],
+	correctAnswer: 4,
+    explanation: ""
+	},
+	{
+	question: "¿Cuánto tiempo después del trasplante se recomienda que una mujer evite quedarse embarazada?",
+	options: [
+	"6 meses",
+	"12 meses",
+	"18 a 24 meses",
+	"3 años"
+	],
+	correctAnswer: 3,
+    explanation: ""
+	},
+	{
+	question: "¿Qué precaución deben tomar los hombres trasplantados en sus relaciones sexuales durante los primeros meses?",
+	options: [
+	"Abstinencia total",
+	"Usar preservativos",
+	"No es necesaria ninguna precaución especial",
+	"Consultar al médico antes de cada relación"
+	],
+	correctAnswer: 2,
+    explanation: ""
+	},
+	{
+	question: "¿Qué tipo de ejercicio físico se recomienda después del trasplante?",
+	options: [
+	"Deportes de contacto",
+	"Levantamiento de pesas",
+	"Ejercicio físico moderado",
+	"Ejercicios de alta intensidad"
+	],
+	correctAnswer: 3,
+    explanation: ""
+	},
+	{
+	question: "¿Cuánto tiempo se recomienda esperar antes de empezar a conducir después del trasplante?",
+	options: [
+	"Una semana después del alta hospitalaria",
+	"No es necesario seguir ninguna recomendación en cuanto al tiempo",
+	"Una vez pasado determinado tiempo y siempre consultándolo con el médico",
+	"No se puede volver a conducir"
+	],
+	correctAnswer: 3,
+    explanation: ""
+	},
+	{
+	question: "¿Qué debe hacer el paciente si nota fatiga o falta de aire durante una actividad?",
+	options: [
+	"Continuar la actividad",
+	"Aumentar la intensidad",
+	"Dejar de practicarla",
+	"Tomar medicación adicional"
+	],
+	correctAnswer: 3,
+    explanation: ""
+	},
+	{
+	question: "¿Dónde debe acudir el paciente para recoger los inmunosupresores tacrolimus y micofenolato?",
+	options: [
+	"A su farmacia habitual o cualquier farmacia comunitaria",
+	"A la Farmacia de Pacientes Externos del Hospital",
+	"Al centro de salud",
+	"A cualquier farmacia de guardia"
+	],
+	correctAnswer: 1,
+    explanation: ""
+	},
+	{
+	question: "¿Cómo debe acudir el paciente cuando va a hacerse los análisis de fármacos inmunosupresores?",
+	options: [
+	"Después de desayunar",
+	"En ayunas y sin tomarse la dosis de esa mañana",
+	"Tomando solo la mitad de la dosis habitual",
+	"No es necesaria ninguna preparación especial"
+	],
+	correctAnswer: 2,
+    explanation: ""
+	},
+	{
+	question: "¿Cuánto tiempo debe pasar entre la última toma de inmunosupresores y la extracción de sangre para los análisis?",
+	options: [
+	"6 horas",
+	"8 horas",
+	"10 horas",
+	"Al menos 12 horas"
+	],
+	correctAnswer: 4,
+    explanation: ""
+	},
+	{
+	question: "¿Qué debe hacer el paciente si se ha tomado la medicación antes de ir a hacerse los análisis?",
+	options: [
+	"Cancelar la cita y volver otro día",
+	"Avisar a la enfermera",
+	"No decir nada y proceder normalmente",
+	"Tomar una dosis adicional de medicación"
+	],
+	correctAnswer: 2,
+    explanation: ""
+	},
+	{
+	question: "¿Cuál es uno de los efectos secundarios de los corticoides?",
+	options: [
+	"Pérdida de cabello",
+	"Disminución de la tensión arterial",
+	"Disminución del azúcar en sangre",
+	"Aumento del apetito y del peso corporal"
+	],
+	correctAnswer: 4,
+    explanation: ""
+	},
+	{
+	question: "¿Qué se recomienda a las mujeres en cuanto a la autoexploración de los pechos?",
+	options: [
+	"No es necesaria después del trasplante",
+	"Hacerla una vez al año",
+	"Hacerla una vez al mes",
+	"Solo si se nota alguna anomalía"
+	],
+	correctAnswer: 3,
+    explanation: ""
+	},
+	{
+	question: "¿Qué tipo de dieta se recomienda seguir para evitar el aumento de peso?",
+	options: [
+	"Rica en grasas saturadas",
+	"Alta en proteínas y baja en carbohidratos",
+	"Baja en calorías",
+	"Rica en azúcares simples"
+	],
+	correctAnswer: 3,
+    explanation: ""
+	},
+	{
+	question: "¿Qué se recomienda hacer si aparecen manchas en la piel o verrugas que cambian de color o tamaño?",
+	options: [
+	"Ignorarlas",
+	"Aplicar cremas sin receta",
+	"Informar al médico en la próxima consulta",
+	"Acudir inmediatamente a urgencias"
+	],
+	correctAnswer: 3,
+    explanation: ""
+	},
+	{
+	question: "¿Qué tipo de calzado se recomienda usar después del trasplante?",
+	options: [
+	"Zapatos de tacón alto",
+	"Calzado cómodo y que sujete bien el pie",
+	"Sandalias abiertas",
+	"No se menciona ninguna recomendación específica sobre el calzado"
+	],
+	correctAnswer: 2,
+    explanation: ""
+	},
+	{
+	question: "¿Qué se aconseja hacer si el paciente tiene dificultad para respirar?",
+	options: [
+	"Esperar a que pase",
+	"Tomar un analgésico",
+	"Acudir a Puerta de Urgencias",
+	"Llamar al médico de cabecera"
+	],
+	correctAnswer: 3,
+    explanation: ""
+	},
+	{
+	question: "¿Qué se recomienda hacer con las prótesis dentales extraíbles?",
+	options: [
+	"Lavarlas una vez al día",
+	"Lavarlas después de cada comida utilizando antiséptico",
+	"No es necesario lavarlas diariamente",
+	"Usar solo agua para limpiarlas"
+	],
+	correctAnswer: 2,
+    explanation: ""
+	},
+	{
+	question: "¿Qué se aconseja hacer si el paciente tiene fiebre alta en más de dos tomas?",
+	options: [
+	"Tomar antibióticos por cuenta propia",
+	"Esperar a que baje sola",
+	"Informar al médico o a la enfermera",
+	"Aplicar compresas frías como única medida para tratar la fiebre"
+	],
+	correctAnswer: 3,
+    explanation: ""
+	},
+	{
+	question: "¿Qué tipo de ejercicios se recomienda continuar después del alta hospitalaria?",
+	options: [
+	"Ejercicios de fuerza",
+	"Ejercicios de flexibilidad",
+	"Ejercicios respiratorios",
+	"Ejercicios de equilibrio"
+	],
+	correctAnswer: 3,
+    explanation: ""
+	},
+	{
+	question: "¿Qué se recomienda hacer antes de viajar a zonas endémicas?",
+	options: [
+	"Vacunarse por cuenta propia",
+	"Consultar a su médico",
+	"No es necesario tomar precauciones especiales",
+	"Evitar completamente viajar a estas zonas"
+	],
+	correctAnswer: 2,
+    explanation: ""
+	},
+	{
+	question: "¿Cuánto tiempo se recomienda que pase antes de que el esternón se una completamente después de la cirugía?",
+	options: [
+	"2 semanas",
+	"4 semanas",
+	"6 semanas",
+	"8 semanas"
+	],
+	correctAnswer: 4,
+    explanation: ""
+	},
+	{
+	question: "¿Qué se recomienda hacer si el paciente no puede conciliar el sueño?",
+	options: [
+	"Tomar medicación sin receta",
+	"Consultar a su médico",
+	"Hacer ejercicio intenso antes de dormir",
+	"Consumir bebidas alcohólicas para relajarse"
+	],
+	correctAnswer: 2,
+    explanation: ""
+	},
+	{
+	question: "¿Qué tipo de alimentos se recomienda evitar para prevenir infecciones?",
+	options: [
+	"Frutas y verduras bien lavadas",
+	"Carnes bien cocinadas",
+	"Alimentos crudos o poco cocinados",
+	"Agua embotellada o potable"
+	],
+	correctAnswer: 3,
+    explanation: ""
+	},
+	{
+	question: "¿Qué se recomienda hacer si el paciente nota palpitaciones que no cesan después de la actividad sexual?",
+	options: [
+	"Ignorarlas",
+	"Tomar un analgésico",
+	"Consultar al médico",
+	"Aumentar la frecuencia de la actividad sexual"
+	],
+	correctAnswer: 3,
+    explanation: ""
+	},
+	{
+	question: "¿Qué se aconseja hacer con respecto a las obras en casa durante el primer año post-trasplante?",
+	options: [
+	"Realizarlas normalmente",
+	"Participar activamente en ellas",
+	"No iniciar ninguna obra",
+	"Realizarlas solo si son urgentes"
+	],
+	correctAnswer: 3,
+    explanation: ""
+	},
+	{
+	question: "¿Qué se recomienda hacer si el paciente necesita un medicamento que no está en su prescripción habitual?",
+	options: [
+	"Comprarlo sin receta en la farmacia",
+	"Pedírselo a un familiar o amigo",
+	"Consultar primero con su médico",
+	"Tomar productos de herboristería como alternativa"
+	],
+	correctAnswer: 3,
+    explanation: ""
+	},
+	{
+	question: "¿Con qué frecuencia se recomienda realizar las revisiones periódicas después del trasplante?",
+	options: [
+	"Una vez al año",
+	"Cada seis meses",
+	"Según lo indique el médico",
+	"Solo cuando el paciente se sienta mal"
+	],
+	correctAnswer: 3,
+    explanation: ""
+	},
+    {
+	question: "¿Qué se recomienda hacer si el paciente tiene dudas sobre su medicación después del alta?",
+	options: [
+	"Buscar información en internet",
+	"Preguntar en la farmacia",
+	"Esperar a la próxima consulta",
+	"Llamar al servicio de Farmacia del hospital"
+	],
+	correctAnswer: 4,
+        explanation: ""
+	}
+    ];
+
+    // Estado de la aplicación
+    let currentQuestions = [];
+    let currentQuestionIndex = 0;
+    let answers = [];
+    let score = 0;
+    let testCompleted = false;
+
+    // Elementos del DOM
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const startTestBtn = document.getElementById('start-test-btn');
+    const goToTestBtn = document.getElementById('go-to-test-btn');
+    const questionProgress = document.getElementById('question-progress');
+    const questionText = document.getElementById('question-text');
+    const optionsContainer = document.getElementById('options-container');
+    const resultsContent = document.getElementById('results-content');
+    const reportModal = document.getElementById('report-modal');
+    const fullReport = document.getElementById('full-report');
+    const closeReportBtn = document.getElementById('close-report-btn');
+    const downloadReportBtn = document.getElementById('download-report-btn');
+    const downloadSpinner = document.getElementById('download-spinner');
+
+    // Gráficos
+    let barChart = null;
+    let pieChart = null;
+
+    // Funciones del temporizador
+    function initializeTimer() {
+        // Crear el elemento del temporizador si no existe
+        if (!document.getElementById('timer-container')) {
+            // Crear contenedor del temporizador
+            const timerContainer = document.createElement('div');
+            timerContainer.id = 'timer-container';
+            timerContainer.style.cssText = `
+                background-color: #f8f9fa;
+                padding: 8px 15px;
+                border-radius: 4px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 15px;
+                border: 1px solid #dee2e6;
+            `;
+
+            // Crear el texto del temporizador
+            const timerText = document.createElement('span');
+            timerText.textContent = 'Tiempo restante:';
+            timerText.style.fontWeight = 'bold';
+
+            // Crear el display del temporizador
+            timerDisplay = document.createElement('span');
+            timerDisplay.id = 'timer-display';
+            timerDisplay.textContent = formatTime(timerDuration);
+            timerDisplay.style.cssText = `
+                font-size: 20px;
+                font-weight: bold;
+                color: #28a745;
+            `;
+
+            // Añadir elementos al contenedor
+            timerContainer.appendChild(timerText);
+            timerContainer.appendChild(timerDisplay);
+
+            // Insertar el contenedor de temporizador al principio del tab de test
+            const testTab = document.getElementById('test-tab');
+            const questionHeader = testTab.querySelector('.question-header');
+            testTab.insertBefore(timerContainer, questionHeader);
+        } else {
+            // Si ya existe, obtener referencia
+            timerDisplay = document.getElementById('timer-display');
+        }
+    }
+
+    function startTimer() {
+        // Restablecer tiempo restante
+        remainingTime = timerDuration;
+        timerDisplay.textContent = formatTime(remainingTime);
+        timerDisplay.style.color = '#28a745'; // Verde al inicio
+        
+        // Limpiar intervalo anterior si existe
+        if (timerInterval) {
+            clearInterval(timerInterval);
+        }
+        
+        // Iniciar nuevo intervalo
+        timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function updateTimer() {
+        // Reducir tiempo restante
+        remainingTime--;
+        
+        // Actualizar el display del temporizador
+        timerDisplay.textContent = formatTime(remainingTime);
+        
+        // Cambiar color según el tiempo restante
+        if (remainingTime <= 10) {
+            timerDisplay.style.color = '#dc3545'; // Rojo cuando queda poco tiempo
+            timerDisplay.classList.add('timer-danger');
+        } else if (remainingTime <= 30) {
+            timerDisplay.style.color = '#ffc107'; // Amarillo cuando queda medio tiempo
+            timerDisplay.classList.remove('timer-danger');
+            timerDisplay.classList.add('timer-warning');
+        }
+        
+        // Si el tiempo se acaba
+        if (remainingTime <= 0) {
+            clearInterval(timerInterval);
+            timerDisplay.textContent = "¡Tiempo agotado!";
+            
+            // Simular finalización automática del test
+            endTestDueToTimeout();
+        }
+    }
+
+    function endTestDueToTimeout() {
+        // Marcar las preguntas no respondidas como incorrectas
+        while (currentQuestionIndex < currentQuestions.length) {
+            answers.push({
+                question: currentQuestionIndex,
+                selected: -1, // -1 indica que no se seleccionó respuesta
+                correct: false
+            });
+            currentQuestionIndex++;
+        }
+        
+        // Mostrar una alerta
+        alert("¡El tiempo se ha agotado! El test ha finalizado automáticamente.");
+        
+        // Marcar el test como completado y mostrar resultados
+        testCompleted = true;
+        showResults();
+        changeTab('results');
+    }
+
+    function pauseTimer() {
+        clearInterval(timerInterval);
+    }
+
+    function resumeTimer() {
+        if (remainingTime > 0 && !testCompleted) {
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+    }
+
+    function stopTimer() {
+        clearInterval(timerInterval);
+        if (timerDisplay) {
+            timerDisplay.textContent = formatTime(0);
+        }
+    }
+
+    function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    // Inicialización
+    selectRandomQuestions();
+    setupEventListeners();
+    showQuestion();
+
+    // Seleccionar preguntas aleatorias
+    function selectRandomQuestions() {
+        const shuffled = [...allQuestions].sort(() => 0.5 - Math.random());
+        currentQuestions = shuffled.slice(0, 5);
+    }
+
+    // Configurar los event listeners
+    function setupEventListeners() {
+        // Eventos de las pestañas
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabId = btn.dataset.tab;
+                // Pausar el temporizador si cambiamos de pestaña
+                if (tabId !== 'test' && timerInterval) {
+                    pauseTimer();
+                } else if (tabId === 'test' && remainingTime > 0 && !testCompleted) {
+                    resumeTimer();
+                }
+                changeTab(tabId);
+            });
+        });
+
+        // Botón de comenzar test
+        startTestBtn.addEventListener('click', () => {
+            // Reiniciar el test por si acaso
+            resetTest();
+            // Cambiar a la pestaña de test
+            changeTab('test');
+        });
+
+        // Botón de ir al test
+        goToTestBtn.addEventListener('click', () => {
+            changeTab('test');
+            // Si el test no está completado, reanudar el temporizador
+            if (!testCompleted && remainingTime > 0) {
+                resumeTimer();
+            }
+        });
+
+        // Botón para cerrar el informe
+        closeReportBtn.addEventListener('click', () => {
+            reportModal.style.display = 'none';
+        });
+
+        // Botón para descargar el informe como PDF
+        downloadReportBtn.addEventListener('click', generatePDF);
+    }
+
+    // Cambiar de pestaña
+    function changeTab(tabId) {
+        tabBtns.forEach(btn => {
+            if (btn.dataset.tab === tabId) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
+        tabContents.forEach(content => {
+            if (content.id === `${tabId}-tab`) {
+                content.classList.add('active');
+            } else {
+                content.classList.remove('active');
+            }
+        });
+    }
+
+    // Mostrar pregunta actual
+    function showQuestion() {
+        if (currentQuestionIndex < currentQuestions.length) {
+            const question = currentQuestions[currentQuestionIndex];
+            questionProgress.textContent = `Pregunta ${currentQuestionIndex + 1} de ${currentQuestions.length}`;
+            questionText.textContent = question.question;
+
+            // Crear botones de opciones
+            optionsContainer.innerHTML = '';
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.classList.add('option-btn');
+                button.textContent = option;
+                button.addEventListener('click', () => handleAnswerSelection(index));
+                optionsContainer.appendChild(button);
+            });
+        }
+    }
+
+    // Manejar la selección de respuesta
+    function handleAnswerSelection(selectedAnswer) {
+        const question = currentQuestions[currentQuestionIndex];
+        const isCorrect = selectedAnswer === (question.correctAnswer - 1);
+
+        answers.push({
+            question: currentQuestionIndex,
+            selected: selectedAnswer,
+            correct: isCorrect
+        });
+
+        if (isCorrect) {
+            score++;
+        }
+
+        currentQuestionIndex++;
+
+        if (currentQuestionIndex < currentQuestions.length) {
+            showQuestion();
+        } else {
+            // Detener el temporizador cuando se complete el test
+            stopTimer();
+            testCompleted = true;
+            showResults();
+            changeTab('results');
+        }
+    }
+
+    // Mostrar resultados
+    function showResults() {
+        if (!testCompleted) {
+            resultsContent.innerHTML = `
+                <p>Complete el test para ver los resultados.</p>
+                <button id="go-to-test-btn" class="btn btn-primary">Ir al Test</button>
+            `;
+            document.getElementById('go-to-test-btn').addEventListener('click', () => {
+                changeTab('test');
+            });
+            return;
+        }
+
+        const correctAnswers = answers.filter(a => a.correct).length;
+        const incorrectAnswers = currentQuestions.length - correctAnswers;
+        const percentage = Math.round((score / currentQuestions.length) * 100);
+        
+        // Determinar si se agotó el tiempo o se completó normalmente
+        const timeInfo = remainingTime <= 0 ? 
+            `<p style="color: #dc3545; font-weight: bold;">Se agotó el tiempo.</p>` : 
+            `<p>Se completó con ${formatTime(timerDuration - remainingTime)} de tiempo utilizado.</p>`;
+
+        resultsContent.innerHTML = `
+            <div class="score-container">
+                <h3 style="margin: 0 0 10px 0;">Puntuación Final</h3>
+                <p class="score-text">${score} de ${currentQuestions.length} (${percentage}%)</p>
+                ${timeInfo}
+            </div>
+
+            <div class="charts-container">
+                <div class="chart-container">
+                    <h3 style="text-align: center;">Gráfico de Barras</h3>
+                    <canvas id="bar-chart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 style="text-align: center;">Gráfico Circular</h3>
+                    <canvas id="pie-chart"></canvas>
+                </div>
+            </div>
+
+            <h3>Detalle de Respuestas:</h3>
+            <div id="answers-container"></div>
+
+            <div class="button-container" style="margin-top: 20px;">
+                <button id="reset-test-btn" class="btn btn-primary">Reiniciar Test</button>
+                <button id="show-report-btn" class="btn btn-secondary">Ver Informe Completo</button>
+            </div>
+        `;
+
+        // Crear gráficos
+        createCharts(correctAnswers, incorrectAnswers);
+
+        // Mostrar respuestas
+        const answersContainer = document.getElementById('answers-container');
+        answers.forEach((answer, index) => {
+            const question = currentQuestions[answer.question];
+            const answerCard = document.createElement('div');
+            answerCard.classList.add('answer-card');
+            answerCard.classList.add(answer.correct ? 'correct' : 'incorrect');
+            
+            // Manejar las preguntas no respondidas (timeout)
+            let userAnswer = "Sin respuesta (tiempo agotado)";
+            if (answer.selected >= 0) {
+                userAnswer = question.options[answer.selected];
+            }
+            
+            answerCard.innerHTML = `
+                <p style="font-weight: bold; margin: 0 0 10px 0;">
+                    ${index + 1}. ${question.question}
+                </p>
+                <p style="margin: 0 0 5px 0;">
+                    Tu respuesta: ${userAnswer}
+                </p>
+                <p style="margin: 0 0 5px 0;">
+                    Respuesta correcta: ${question.options[question.correctAnswer - 1]}
+                </p>
+                <p style="font-style: italic; margin: 10px 0 0 0;">
+                    ${question.explanation}
+                </p>
+            `;
+            answersContainer.appendChild(answerCard);
+        });
+
+        // Event listeners para los botones
+        document.getElementById('reset-test-btn').addEventListener('click', resetTest);
+        document.getElementById('show-report-btn').addEventListener('click', showReport);
+    }
+
+    // Crear gráficos
+    function createCharts(correctAnswers, incorrectAnswers) {
+        // Destruir gráficos anteriores si existen
+        if (barChart) barChart.destroy();
+        if (pieChart) pieChart.destroy();
+
+        // Gráfico de barras
+        const barCtx = document.getElementById('bar-chart').getContext('2d');
+        barChart = new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Correctas', 'Incorrectas'],
+                datasets: [{
+                    label: 'Número de respuestas',
+                    data: [correctAnswers, incorrectAnswers],
+                    backgroundColor: [
+                        '#00C49F',
+                        '#FF8042'
+                    ],
+                    borderColor: [
+                        '#00C49F',
+                        '#FF8042'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        stepSize: 1
+                    }
+                }
+            }
+        });
+
+        // Gráfico circular
+        const pieCtx = document.getElementById('pie-chart').getContext('2d');
+        pieChart = new Chart(pieCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Correctas', 'Incorrectas'],
+                datasets: [{
+                    data: [correctAnswers, incorrectAnswers],
+                    backgroundColor: [
+                        '#00C49F',
+                        '#FF8042'
+                    ],
+                    borderColor: [
+                        '#00C49F',
+                        '#FF8042'
+                    ],
+                    borderWidth: 1
+                }]
+            }
+        });
+    }
+
+    // Reiniciar test
+	function resetTest() {
+	    // Reiniciar variables del test
+	    currentQuestionIndex = 0;
+	    answers = [];
+	    score = 0;
+	    testCompleted = false;
+    
+	    // Seleccionar nuevas preguntas aleatorias
+	    selectRandomQuestions();
+    
+	    // Mostrar la primera pregunta
+	    showQuestion();
+    
+	    // Cambiar a la pestaña del test
+	    changeTab('test');
+    
+	    // Reiniciar y comenzar nuevamente el temporizador
+	    // Es importante hacer esto después de cambiar la pestaña
+	    // para asegurar que los elementos del DOM estén disponibles
+	    initializeTimer();
+	    startTimer();
+	}
+
+    // Mostrar informe
+    function showReport() {
+        // Obtener información del paciente
+        const patientName = document.getElementById('patient-name').value || 'No especificado';
+        const patientAge = document.getElementById('patient-age').value || 'No especificada';
+        const patientSex = document.getElementById('patient-sex').value;
+        const patientDate = document.getElementById('patient-date').value || 'No especificada';
+        
+        // Información del tiempo
+        const usedTime = timerDuration - remainingTime;
+        const timeStatus = remainingTime <= 0 ? 
+            `<span style="color: #dc3545;">Tiempo agotado</span>` : 
+            `${formatTime(usedTime)} (${Math.round((usedTime/timerDuration) * 100)}% del tiempo disponible)`;
+
+        // Convertir valor del sexo a texto
+        let sexText = 'No especificado';
+        if (patientSex === 'M') sexText = 'Masculino';
+        else if (patientSex === 'F') sexText = 'Femenino';
+        else if (patientSex === 'O') sexText = 'Otro';
+
+        // Calcular estadísticas
+        const correctAnswers = answers.filter(a => a.correct).length;
+        const incorrectAnswers = currentQuestions.length - correctAnswers;
+        const percentage = Math.round((score / currentQuestions.length) * 100);
+
+        // Determinar evaluación basada en porcentaje
+        let evaluation = '';
+        if (percentage >= 80) {
+            evaluation = 'Excelente conocimiento sobre el trasplante cardíaco.';
+        } else if (percentage >= 60) {
+            evaluation = 'Buen conocimiento sobre el trasplante cardíaco.';
+        } else if (percentage >= 40) {
+            evaluation = 'Conocimiento básico sobre el trasplante cardíaco.';
+        } else {
+            evaluation = 'Necesita mejorar su conocimiento sobre el trasplante cardíaco.';
+        }
+
+        // Generar el informe con info del tiempo
+        fullReport.innerHTML = `
+            <div class="report-title">
+                <h1>Test de conocimientos sobre trasplante cardíaco</h1>
+                <h2></h2>
+            </div>
+
+            <div class="patient-info">
+                <h3>Información del Paciente</h3>
+                <table class="patient-table">
+                    <tr>
+                        <th>Nombre:</th>
+                        <td>${patientName}</td>
+                    </tr>
+                    <tr>
+                        <th>Edad:</th>
+                        <td>${patientAge}</td>
+                    </tr>
+                    <tr>
+                        <th>Sexo:</th>
+                        <td>${sexText}</td>
+                    </tr>
+                    <tr>
+                        <th>Fecha:</th>
+                        <td>${patientDate ? new Date(patientDate).toLocaleDateString() : 'No especificada'}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="results-summary">
+                <h3>Resultado Final</h3>
+                <p><strong>Puntuación:</strong> ${score} de ${currentQuestions.length} preguntas correctas</p>
+                <p><strong>Porcentaje:</strong> ${percentage}%</p>
+                <p><strong>Tiempo utilizado:</strong> ${timeStatus}</p>
+                <p><strong>Evaluación:</strong> ${evaluation}</p>
+            </div>
+
+            <div class="report-charts">
+                <h3>Gráficos de Resultados</h3>
+                <div style="display: flex; justify-content: space-between; margin: 20px 0;">
+                    <div style="width: 48%;">
+                        <h4 style="text-align: center;">Distribución de Respuestas</h4>
+                        <div style="text-align: center;">
+                            <canvas id="report-pie-chart" width="220" height="200"></canvas>
+                        </div>
+                    </div>
+                    <div style="width: 48%;">
+                        <h4 style="text-align: center;">Respuestas por Categoría</h4>
+                        <div style="text-align: center;">
+                            <canvas id="report-bar-chart" width="220" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="report-answers">
+                <h3>Detalle de Respuestas</h3>
+                ${answers.map((answer, index) => {
+                    const question = currentQuestions[answer.question];
+                    
+                    // Manejar las preguntas no respondidas (timeout)
+                    let userAnswer = "Sin respuesta (tiempo agotado)";
+                    if (answer.selected >= 0) {
+                        userAnswer = question.options[answer.selected];
+                    }
+                    
+                    return `
+                        <div class="report-answer ${answer.correct ? 'correct' : 'incorrect'}">
+                            <p><strong>${index + 1}. ${question.question}</strong></p>
+                            <p><strong>Tu respuesta:</strong> ${userAnswer} ${answer.correct ? '✓' : '✗'}</p>
+                            ${!answer.correct ? `<p><strong>Respuesta correcta:</strong> ${question.options[question.correctAnswer - 1]}</p>` : ''}
+                            <p><strong>Explicación:</strong> <em>${question.explanation}</em></p>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+
+            <div class="report-footer">
+                <p>Este informe ha sido generado el ${new Date().toLocaleDateString()} a las ${new Date().toLocaleTimeString()}</p>
+            </div>
+        `;
+
+        // Mostrar la ventana modal
+        reportModal.style.display = 'block';
+
+        // Crear gráficos en el informe
+        setTimeout(() => {
+            createReportCharts(correctAnswers, incorrectAnswers);
+        }, 100);
+    }
+
+    // Crear gráficos para el informe
+    function createReportCharts(correctAnswers, incorrectAnswers) {
+        // Gráfico circular para el informe
+        const reportPieCtx = document.getElementById('report-pie-chart').getContext('2d');
+        new Chart(reportPieCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Correctas', 'Incorrectas'],
+                datasets: [{
+                    data: [correctAnswers, incorrectAnswers],
+                    backgroundColor: ['#00C49F', '#FF8042'],
+                    borderColor: ['#00C49F', '#FF8042'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: false,
+                animation: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                size: 12
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Gráfico de barras para el informe
+        const reportBarCtx = document.getElementById('report-bar-chart').getContext('2d');
+        new Chart(reportBarCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Correctas', 'Incorrectas'],
+                datasets: [{
+                    label: 'Número de respuestas',
+                    data: [correctAnswers, incorrectAnswers],
+                    backgroundColor: ['#00C49F', '#FF8042'],
+                    borderColor: ['#00C49F', '#FF8042'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: false,
+                animation: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        stepSize: 1,
+                        max: Math.max(currentQuestions.length, correctAnswers + incorrectAnswers)
+                    }
+                }
+            }
+        });
+    }
+
+    // Función para generar PDF
+    async function generatePDF() {
+        // Mostrar spinner de carga
+        downloadSpinner.style.display = 'inline-block';
+        downloadReportBtn.disabled = true;
+        
+        try {
+            // Obtener información del paciente
+            const patientName = document.getElementById('patient-name').value || 'Sin nombre';
+            
+            // Crear una versión compacta del informe para PDF
+            createCompactReport();
+            
+            // Crear nueva instancia de jsPDF
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const reportElement = document.getElementById('compact-report');
+            
+            // Configurar opciones para html2canvas
+            const options = {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                allowTaint: true
+            };
+            
+            // Convertir el contenido a imagen con html2canvas
+            const canvas = await html2canvas(reportElement, options);
+            const imgData = canvas.toDataURL('image/jpeg', 1.0);
+            
+            // Dimensiones de la página A4
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
+            
+            // Calcular la ratio para ajustar la imagen a la página
+            const imgWidth = pageWidth;
+            const imgHeight = canvas.height * imgWidth / canvas.width;
+            
+            let heightLeft = imgHeight;
+            let position = 0;
+            
+            // Añadir primera página
+            pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+            
+            // Añadir páginas adicionales si es necesario
+            while (heightLeft > 0) {
+                position = heightLeft - imgHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+            }
+            
+            // Descargar el PDF
+            pdf.save(`Resultados_Test_${patientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`);
+            
+            // Restaurar informe original
+            restoreOriginalReport();
+        } catch (error) {
+            console.error('Error al generar el PDF:', error);
+            alert('Hubo un error al generar el PDF. Por favor, inténtelo de nuevo.');
+        } finally {
+            // Ocultar spinner de carga
+            downloadSpinner.style.display = 'none';
+            downloadReportBtn.disabled = false;
+        }
+    }
+    
+    // Función para crear una versión compacta del informe para PDF
+    function createCompactReport() {
+        // Guardar el informe original
+        const originalReport = fullReport.innerHTML;
+        document.getElementById('original-report-backup').innerHTML = originalReport;
+        
+        // Obtener información del paciente y resultados
+        const patientName = document.getElementById('patient-name').value || 'No especificado';
+        const patientAge = document.getElementById('patient-age').value || 'No especificada';
+        const patientSex = document.getElementById('patient-sex').value;
+        const patientDate = document.getElementById('patient-date').value || 'No especificada';
+        
+        // Información del tiempo
+        const usedTime = timerDuration - remainingTime;
+        const timeStatus = remainingTime <= 0 ? 
+            "Tiempo agotado" : 
+            `${formatTime(usedTime)} (${Math.round((usedTime/timerDuration) * 100)}% del tiempo disponible)`;
+        
+        // Convertir valor del sexo a texto
+        let sexText = 'No especificado';
+        if (patientSex === 'M') sexText = 'Masculino';
+        else if (patientSex === 'F') sexText = 'Femenino';
+        else if (patientSex === 'O') sexText = 'Otro';
+        
+        // Calcular estadísticas
+        const correctAnswers = answers.filter(a => a.correct).length;
+        const incorrectAnswers = currentQuestions.length - correctAnswers;
+        const percentage = Math.round((score / currentQuestions.length) * 100);
+        
+        // Determinar evaluación basada en porcentaje
+        let evaluation = '';
+        if (percentage >= 80) {
+            evaluation = 'Excelente conocimiento sobre el trasplante cardíaco.';
+        } else if (percentage >= 60) {
+            evaluation = 'Buen conocimiento sobre el trasplante cardíaco.';
+        } else if (percentage >= 40) {
+            evaluation = 'Conocimiento básico sobre el trasplante cardíaco.';
+        } else {
+            evaluation = 'Necesita mejorar su conocimiento sobre el trasplante cardíaco.';
+        }
+        
+        // Crear la versión compacta del informe
+        const compactReport = document.createElement('div');
+        compactReport.id = 'compact-report';
+        compactReport.style.width = '210mm'; // Ancho A4
+        compactReport.style.padding = '10mm';
+        compactReport.style.fontFamily = 'Arial, sans-serif';
+        compactReport.style.fontSize = '10pt';
+        compactReport.style.backgroundColor = 'white';
+        
+        compactReport.innerHTML = `
+            <div style="text-align: center; border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 8px;">
+                <h1 style="margin: 0; font-size: 16pt;">Test de conocimientos sobre trasplante cardíaco</h1>
+                <h2>RESULTADOS</h2>
+            </div>
+            
+            <div style="display: flex; margin-bottom: 10px;">
+                <div style="flex: 1;">
+                    <h3 style="margin: 5px 0; font-size: 12pt;">Información del Paciente</h3>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 10pt;">
+                        <tr>
+                            <td style="padding: 2px 4px; font-weight: bold;">Nombre:</td>
+                            <td style="padding: 2px 4px;">${patientName}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 2px 4px; font-weight: bold;">Edad:</td>
+                            <td style="padding: 2px 4px;">${patientAge}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 2px 4px; font-weight: bold;">Sexo:</td>
+                            <td style="padding: 2px 4px;">${sexText}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 2px 4px; font-weight: bold;">Fecha:</td>
+                            <td style="padding: 2px 4px;">${patientDate ? new Date(patientDate).toLocaleDateString() : 'No especificada'}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 2px 4px; font-weight: bold;">Tiempo:</td>
+                            <td style="padding: 2px 4px;">${timeStatus}</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div style="flex: 1; margin-left: 15px; background-color: #f9f9f9; padding: 8px; border-radius: 4px;">
+                    <h3 style="margin: 0 0 5px 0; font-size: 12pt;">Resultado Final</h3>
+                    <p style="margin: 3px 0;"><strong>Puntuación:</strong> ${score} de ${currentQuestions.length} correctas</p>
+                    <p style="margin: 3px 0;"><strong>Porcentaje:</strong> ${percentage}%</p>
+                    <p style="margin: 3px 0;"><strong>Evaluación:</strong> ${evaluation}</p>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 10px;">
+                <h3 style="margin: 5px 0; font-size: 12pt;">Resumen de Respuestas</h3>
+                <table style="width: 100%; border-collapse: collapse; font-size: 9pt;">
+                    <tr style="background-color: #f0f0f0;">
+                        <th style="padding: 4px; border: 1px solid #ddd; text-align: left;">Pregunta</th>
+                        <th style="padding: 4px; border: 1px solid #ddd; text-align: center; width: 80px;">Resultado</th>
+                    </tr>
+                    ${answers.map((answer, index) => {
+                        const question = currentQuestions[answer.question];
+                        return `
+                            <tr>
+                                <td style="padding: 3px 4px; border: 1px solid #ddd;">${index + 1}. ${question.question}</td>
+                                <td style="padding: 3px 4px; border: 1px solid #ddd; text-align: center; background-color: ${answer.correct ? '#e8f5e9' : '#ffebee'};">
+                                    ${answer.correct ? '✓ Correcto' : '✗ Incorrecto'}
+                                </td>
+                            </tr>
+                        `;
+                    }).join('')}
+                </table>
+            </div>
+            
+            <div style="margin-bottom: 10px; page-break-before: always;">
+                <h3 style="margin: 5px 0; font-size: 12pt;">Detalle de Respuestas Incorrectas</h3>
+                ${answers.some(a => !a.correct) ? 
+                    answers.filter(answer => !answer.correct).map((answer, index) => {
+                        const question = currentQuestions[answer.question];
+                        // Manejar preguntas sin respuesta (timeout)
+                        let userAnswer = "Sin respuesta (tiempo agotado)";
+                        if (answer.selected >= 0) {
+                            userAnswer = question.options[answer.selected];
+                        }
+                        return `
+                            <div style="margin-bottom: 12px; padding: 8px; border: 1px solid #ffcdd2; background-color: #ffebee; border-radius: 4px;">
+                                <p style="margin: 0 0 5px 0; font-weight: bold;">${index + 1}. ${question.question}</p>
+                                <p style="margin: 3px 0; color: #d32f2f;">Tu respuesta: ${userAnswer}</p>
+                                <p style="margin: 3px 0; color: #388e3c;"><strong>Respuesta correcta:</strong> ${question.options[question.correctAnswer - 1]}</p>
+                                <p style="margin: 3px 0; font-style: italic; font-size: 8pt;">${question.explanation}</p>
+                            </div>
+                        `;
+                    }).join('') 
+                    : '<p style="font-style: italic; text-align: center;">No hay respuestas incorrectas. ¡Felicidades!</p>'
+                }
+            </div>
+            
+            <div style="font-size: 10pt; color: #666; text-align: center; margin-top: 10px;">
+                <p>Este informe fue generado el ${new Date().toLocaleDateString()} a las ${new Date().toLocaleTimeString()}</p>
+                <p>Hospital Universitari i Politècnic La Fe - Servicio de Farmacia</p>
+            </div>
+        `;
+        
+        // Agregar el informe compacto al DOM (oculto)
+        compactReport.style.position = 'absolute';
+        compactReport.style.left = '-9999px';
+        document.body.appendChild(compactReport);
+    }
+    
+    // Función para restaurar el informe original
+    function restoreOriginalReport() {
+        // Eliminar el informe compacto
+        const compactReport = document.getElementById('compact-report');
+        if (compactReport) {
+            document.body.removeChild(compactReport);
+        }
+    }
+};
+</script>
+
+</body>
+</html>
